@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 
 // USER REGISTRATION
-export const userRegister = async (req, res) => {
+export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -40,7 +40,7 @@ export const userRegister = async (req, res) => {
 };
 
 // USER LOGIN
-export const userLogin = async (req, res) => {
+export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.json({
@@ -85,7 +85,7 @@ export const userLogin = async (req, res) => {
 };
 
 // USER LOGOUT
-export const userLogout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
