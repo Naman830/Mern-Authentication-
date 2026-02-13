@@ -108,3 +108,38 @@ export const logout = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// SEND VERFICATION FOR OTP TO THE USER'S EMAIL
+export const sendVerifyOtp = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await userModel.findById(userId);
+
+    if (user.isAccountVerified) {
+      return res.json({ success: false, message: "Account Already Verified" });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    user.verifyOtp = otp;
+    // OTP IS APPLIED FOR 1 DAY
+    user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+
+    await user.save();
+
+    // SENDING MALE
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Account Verification Otp",
+      text: `Your OTP is ${otp}. Verify  your account using this OTP.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res.json({ success: true });
+
+    
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
