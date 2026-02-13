@@ -137,8 +137,42 @@ export const sendVerifyOtp = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     return res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
 
+// VERIFY EMAIL
+export const verifyEmail = async (req, res) => {
+  const { userId, otp } = req.body;
+
+  if (!userId || !otp) {
+    return res.json({ success: true, message: "Missing Deatils" });
+  }
+
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      res.json({ success: false, message: "User not Found" });
+    }
+
+    if (user.verifyOtp === "" || user.verifyEmail !== otp) {
+      res.json({ success: false, message: "Invalid Otp" });
+    }
+
+    if (user.verifyOtpExpireAt < Date.now()) {
+    res.json({ success: false, message: 'Otp Expired '});
+    }
     
+    user.isAccountVerified = true;
+
+    user.verifyOtp = '';
+    user.verifyOtpExpireAt = 0;
+
+    await user.save();
+
+    return res.json({success: true, message: 'Email Verified Successfully'})
+
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
