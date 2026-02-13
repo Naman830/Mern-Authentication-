@@ -142,7 +142,7 @@ export const sendVerifyOtp = async (req, res) => {
   }
 };
 
-// VERIFY EMAIL
+// VERIFY EMAIL or ACCOUNT
 export const verifyEmail = async (req, res) => {
   const { userId, otp } = req.body;
 
@@ -161,18 +161,17 @@ export const verifyEmail = async (req, res) => {
     }
 
     if (user.verifyOtpExpireAt < Date.now()) {
-    res.json({ success: false, message: 'Otp Expired '});
+      res.json({ success: false, message: "Otp Expired " });
     }
-    
+
     user.isAccountVerified = true;
 
-    user.verifyOtp = '';
+    user.verifyOtp = "";
     user.verifyOtpExpireAt = 0;
 
     await user.save();
 
-    return res.json({success: true, message: 'Email Verified Successfully'})
-
+    return res.json({ success: true, message: "Email Verified Successfully" });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
