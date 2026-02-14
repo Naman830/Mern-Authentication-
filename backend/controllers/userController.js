@@ -16,7 +16,7 @@ export const getUserData = async(req, res) => {
                 name: user.name,
                 isAccountVerified: user.isAccountVerified
             }
-        })
+        });
         
     } catch (error) {
         res.json({success: false, message: error.message})
