@@ -1,15 +1,14 @@
 import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { AppContent } from "../context/AppContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
 
-
-
-  const {backendUrl, setIsLoggedin} = useContext(AppContent)
+  const { backendUrl, setIsLoggedin } = useContext(AppContent);
 
   const [state, setState] = useState("Sign Up");
   const [name, setName] = useState("");
@@ -17,27 +16,41 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (e) => {
-    
     try {
       e.preventDefault();
 
-        axios.defaults.withCredentials = true;
+      axios.defaults.withCredentials = true;
 
-      if(state === "Sign Up"){
-        const {data} = await axios.post(backendUrl + "/api/auth/register", {name, email, password})
+      if (state === "Sign Up") {
+        const { data } = await axios.post(backendUrl + "/api/auth/register", {
+          name,
+          email,
+          password,
+        });
 
         if (data.success) {
-          setIsLoggedin(true)
-          navigate("/")
-        }else{
-          alert(data.message)
+          setIsLoggedin(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
         }
-      }else{
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/auth/login", {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setIsLoggedin(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
       }
     } catch (error) {
-      
+      toast.error(data.message);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">

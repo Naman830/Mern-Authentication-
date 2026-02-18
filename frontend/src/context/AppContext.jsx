@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
 export const AppContent = createContext();
 
@@ -7,7 +7,6 @@ export const AppContextProvider = (props) => {
     const [isLoggedin, setIsLoggedin] = useState(false)
 const [userData, setUserData] = useState(false)
 
-  consy 
   const value = {
     backendUrl,
     isLoggedin, setIsLoggedin,
