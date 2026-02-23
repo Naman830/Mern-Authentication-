@@ -16,6 +16,8 @@ const Navbar = () => {
         `${backendUrl}/api/auth/send-verify-otp`,
       );
 
+      console.log(data);
+
       if (data.success) {
         navigate("/email-verify");
         toast.success(data.message);
@@ -23,8 +25,7 @@ const Navbar = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
-
+  }
   const logout = async () => {
     try {
       axios.default.withCredentials = true;
