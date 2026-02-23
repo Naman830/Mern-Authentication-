@@ -1,5 +1,5 @@
 import { assets } from "../assets/assets";
-import { useRef, useContext } from "react";
+import { useRef, useContext, useEffect, use } from "react";
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ const EmailVerify = () => {
   const inputRefs = React.useRef([]);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
-  const { userData, backendUrl, setUserData, setIsLoggedin, getUserData } =
+  const { userData, backendUrl, isLoggedin, getUserData } =
     useContext(AppContent);
   const handleInput = (e, index) => {
     if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
@@ -55,6 +55,10 @@ const EmailVerify = () => {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate("/");
+  }, [userData, isLoggedin]);
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
