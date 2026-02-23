@@ -1,12 +1,18 @@
 import { assets } from "../assets/assets";
-import { useRef } from "react";
+import { useRef, useContext } from "react";
 import React from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AppContent } from "../context/AppContext";
 
 const EmailVerify = () => {
   const inputRefs = React.useRef([]);
-
+  const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
+  const { userData, backendUrl, setUserData, setIsLoggedin, getUserData } =
+    useContext(AppContent);
   const handleInput = (e, index) => {
-    e.preventDefault();
     if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
@@ -28,6 +34,28 @@ const EmailVerify = () => {
     });
   };
 
+  const onSubmitHandler = async (e) => {
+    // Handle OTP verification logic here
+    try {
+      e.preventDefault();
+      const otpArray = inputRefs.current.map((e) => e.value);
+      const otp = otpArray.join("");
+      const { data } = await axios.post(
+        backendUrl + "/api/auth/verify-account",
+        { userId: userData._id, otp },
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getUserData();
+        navigate("/");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
       <img
@@ -37,7 +65,10 @@ const EmailVerify = () => {
         className="absolute left-5 sm:left-20 top-5  w-28 cursor-pointer"
       />
 
-      <form className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm ">
+      <form
+        onSubmit={onSubmitHandler}
+        className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm "
+      >
         <h1 className="text-white text-2xl font-semibold text-center mb-4">
           Email Verify Otp
         </h1>
@@ -57,7 +88,6 @@ const EmailVerify = () => {
                 ref={(e) => (inputRefs.current[index] = e)}
                 onInput={(e) => handleInput(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-
                 required
               />
             ))}
