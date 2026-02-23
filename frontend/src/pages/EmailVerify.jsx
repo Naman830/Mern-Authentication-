@@ -1,6 +1,22 @@
 import { assets } from "../assets/assets";
+import { useRef } from "react";
+import React from "react";
 
 const EmailVerify = () => {
+  const inputRefs = React.useRef([]);
+
+  const handleInput = (e, index) => {
+    e.preventDefault();
+    if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && e.target.value.length === 0 && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
       <img
@@ -19,16 +35,25 @@ const EmailVerify = () => {
         </p>
 
         <div className="flex justify-between mb-8 ">
-        {Array(6).fill(0).map((_, index)=> 
-          <input
-            key={index}
-            type="text"
-            maxLength='1'
-            className="w-12 h-12 bg-[#333A6C] text-white text-center text-xl rounded-md"
-            required
-            />
-        )}
+          {Array(6)
+            .fill(0)
+            .map((_, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                className="w-12 h-12 bg-[#333A6C] text-white text-center text-xl rounded-md"
+                ref={(e) => (inputRefs.current[index] = e)}
+                onInput={(e) => handleInput(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                required
+              />
+            ))}
         </div>
+
+        <button className="w-full py-3 bg-gradient-to-r from-indigo-500  to-indigo-900 text-white rounded-full">
+          Verify Email
+        </button>
       </form>
     </div>
   );
